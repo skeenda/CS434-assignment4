@@ -17,7 +17,14 @@ from kmeans import load_data
 
 def show_vec_as_img(vec, title):
   raw = np.zeros((28, 28, 3))
-  raw[:,:,0] = np.reshape(vec, (28, 28)).T
+
+  vec = np.real(vec) # discard imaginary component if one exists
+  vecmin = np.min(vec)
+  vecmax = np.max(vec)
+  vecrange = (vecmax - vecmin)
+  vec = (vec - vecmin) / vecrange
+
+  raw[:,:,0] = np.reshape(vec, (28, 28))
   raw[:,:,1] = raw[:,:,0]
   raw[:,:,2] = raw[:,:,1]
 
@@ -34,5 +41,4 @@ if __name__ == '__main__':
   _, eigenvectors = pca(data)
 
   for idx, vec in enumerate(eigenvectors, 1):
-    vecmax = np.max(vec)
-    show_vec_as_img(vec/vecmax, "EIGENVECTOR NUMBER {:2d}".format(idx))
+    show_vec_as_img(vec, "NORMALIZED EIGENVECTOR NUMBER {:2d}".format(idx))

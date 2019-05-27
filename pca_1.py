@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 from kmeans import load_data
 
-def pca(data, top_b=10):
+def pca(data, top_b=10, normalize_vec=True):
   # compute the mean of the data
   mu = np.mean(data)
   centered = data - mu
@@ -34,12 +34,12 @@ def pca(data, top_b=10):
   w = w[idx].T
 
   # use top eigenvalues if have less than ten
-  if len(lmbda) < 10:
+  if len(lmbda) < top_b:
     return lmbda, w
 
   # if not, return the top ten eigenvalues
   else:
-    return lmbda[:10], w[:10]
+    return lmbda[:top_b], w[:top_b]
 
 if __name__ == '__main__':
   data = load_data('./data/p4-data.txt', to_float32=True)
@@ -49,4 +49,3 @@ if __name__ == '__main__':
 
   for idx, val in enumerate(vals, 1):
     print("{:3d}: {:5.3f}".format(idx, np.real(val)))
-
