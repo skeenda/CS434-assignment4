@@ -11,6 +11,7 @@
 # Report the eigenvalues in decreasing order.
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 def load_data(path, to_float32=False):
     # Loads data from the path provided as 8-bit pixel values.
@@ -25,15 +26,17 @@ def load_data(path, to_float32=False):
 
 def pca(data, top_b=10):
   # compute the mean of the data mu = 0.5 * 1/n sum(x)
-  # just for fun, np.cov actually does this for us
   mu = np.mean(data, axis=0)
-  diff = data - mu
+  centered = data - mu
 
   # compute the covariance of the data
-  sigma = np.cov(diff.T)
-
+  sigma = np.cov(centered.T)
+  
   # get the a vector of eigenvalues and matrix of eigenvectors
   lmbda, w = np.linalg.eigh(sigma)
+
+  lmbda = np.flip(lmbda)
+  w = np.flip(w)
 
   # use top eigenvalues if have less than ten
   if len(lmbda) < 10:
@@ -44,9 +47,12 @@ def pca(data, top_b=10):
     return lmbda[:10], w[:10]
 
 if __name__ == '__main__':
-  data = load_data('./data/p4-data.txt')
-  vals, _ = pca(data)
+  data = load_data('./data/p4-data.txt', to_float32=True)
+  vals, w = pca(data)
+  
   print("Eigenvalues in descending order:")
+
   for idx, val in enumerate(vals, 1):
-    print("{:3d}: {:16.15f} ({})".format(idx, val, val))
+    print("{:3d}: {:16.15f}".format(idx, val))
+    #print(w[idx-1])
 
