@@ -11,9 +11,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-#from PIL import Image, ImageDraw
+
 from pca_1 import pca
-from pca_1 import load_data
+from kmeans import load_data
 
 def show_vec_as_img(vec, title):
   raw = np.zeros((28, 28, 3))
@@ -27,11 +27,12 @@ def show_vec_as_img(vec, title):
 
 if __name__ == '__main__':
   data = load_data('./data/p4-data.txt', to_float32=True)
+
   mean_raw = np.mean(data, axis=0)
   show_vec_as_img(mean_raw, "MEAN IMAGE")
+
   _, eigenvectors = pca(data)
+
   for idx, vec in enumerate(eigenvectors, 1):
     vecmax = np.max(vec)
-    #print(vec)
-    #print(vec/vecmax)
     show_vec_as_img(vec/vecmax, "EIGENVECTOR NUMBER {:2d}".format(idx))

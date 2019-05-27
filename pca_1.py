@@ -13,30 +13,25 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def load_data(path, to_float32=False):
-    # Loads data from the path provided as 8-bit pixel values.
-    data = np.loadtxt(path, dtype=np.uint8, delimiter=',')
-    # If desired, convert to [0, 1] - adds overhead, but makes SSEs easier to
-    #   interpret, w/r/t the order of magnitude observed in the SSEs. In our
-    #   report, all figures were generated via data of type np.float32, [0, 1].
-    if to_float32:
-        data = data.astype(np.float32)
-        data /= 255
-    return data
+from kmeans import load_data
 
 def pca(data, top_b=10):
-  # compute the mean of the data mu = 0.5 * 1/n sum(x)
-  mu = np.mean(data, axis=0)
+  # compute the mean of the data
+  mu = np.mean(data)
   centered = data - mu
 
   # compute the covariance of the data
-  sigma = np.cov(centered.T)
+  sigma = np.cov(centered, rowvar=0)
   
-  # get the a vector of eigenvalues and matrix of eigenvectors
-  lmbda, w = np.linalg.eigh(sigma)
+  # get a vector of eigenvalues and matrix of eigenvectors
+  lmbda, w = np.linalg.eig(np.mat(sigma))
 
-  lmbda = np.flip(lmbda)
-  w = np.flip(w)
+  # sort in descending order
+  idx = lmbda.argsort()[::-1]
+
+  # apply the new indexing and transpose the eigenvector matrix
+  lmbda = lmbda[idx]
+  w = w[idx].T
 
   # use top eigenvalues if have less than ten
   if len(lmbda) < 10:
@@ -53,6 +48,5 @@ if __name__ == '__main__':
   print("Eigenvalues in descending order:")
 
   for idx, val in enumerate(vals, 1):
-    print("{:3d}: {:16.15f}".format(idx, val))
-    #print(w[idx-1])
+    print("{:3d}: {:5.3f}".format(idx, np.real(val)))
 
